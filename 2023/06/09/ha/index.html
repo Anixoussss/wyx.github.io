@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Hexo</title>
+  <title>Spark(HA) | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   
     <link rel="shortcut icon" href="/favicon.png">
@@ -55,6 +55,16 @@
   <div class="article-inner">
     
     
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      Spark(HA)
+    </h1>
+  
+
+      </header>
+    
     <div class="e-content article-entry" itemprop="articleBody">
       
         <h1 id="Spark-StandAloneHA搭建"><a href="#Spark-StandAloneHA搭建" class="headerlink" title="Spark StandAloneHA搭建"></a>Spark StandAloneHA搭建</h1><h2 id="1-首先配置spark-env-sh"><a href="#1-首先配置spark-env-sh" class="headerlink" title="1.首先配置spark-env.sh"></a>1.首先配置spark-env.sh</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"> 删除SPARK_MASTER_HOST=node1这么操作的含义是不指定Master方便我们后续切换Master并在后面增加下面内容指定zookeeper</span><br><span class="line"></span><br><span class="line">_DAEMON_JAVA_OPTS=&quot;-Dspark.deploy.recoveryMode=ZOOKEEPER -Dspark.deploy.zookeeper.url=node1:2181,node2:2181,node3:2181 -Dspark.deploy.zookeeper.dir=/spark-ha&quot;</span><br><span class="line"></span><br><span class="line"># spark.deploy.recoveryMode 指定HA模式 基于Zookeeper实现</span><br><span class="line"># 指定Zookeeper的连接地址</span><br><span class="line"># 指定在Zookeeper中注册临时节点的路径</span><br><span class="line"># 然后将spark分发到node2和node3中</span><br></pre></td></tr></table></figure>
@@ -71,7 +81,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2023/06/09/ha/" data-id="clio2kmei0002pgtz7h44hmsp" data-title="" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2023/06/09/ha/" data-id="clio427m50003yctzdwz44t7s" data-title="Spark(HA)" class="article-share-link">Share</a>
       
       
       
@@ -81,10 +91,19 @@
     
 <nav id="article-nav">
   
+    <a href="/2023/06/09/git/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          git
+        
+      </div>
+    </a>
+  
   
     <a href="/2023/06/09/yarn/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title"></div>
+      <div class="article-nav-title">Spark(Yarn)</div>
     </a>
   
 </nav>
@@ -106,19 +125,23 @@
       <ul>
         
           <li>
-            <a href="/2023/06/09/ha/">(no title)</a>
+            <a href="/2023/06/09/Docker/">Docker</a>
           </li>
         
           <li>
-            <a href="/2023/06/09/yarn/">(no title)</a>
+            <a href="/2023/06/09/hive/">hive</a>
           </li>
         
           <li>
-            <a href="/2023/06/09/local/">(no title)</a>
+            <a href="/2023/06/09/git/">git</a>
           </li>
         
           <li>
-            <a href="/2023/06/07/alone/">(no title)</a>
+            <a href="/2023/06/09/ha/">Spark(HA)</a>
+          </li>
+        
+          <li>
+            <a href="/2023/06/09/yarn/">Spark(Yarn)</a>
           </li>
         
       </ul>
