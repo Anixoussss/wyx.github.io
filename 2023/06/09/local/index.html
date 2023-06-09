@@ -45,81 +45,7 @@
 </header>
 
       <div class="outer">
-        <section id="main">
-  
-    <article id="post-ha" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2023/06/09/ha/" class="article-date">
-  <time class="dt-published" datetime="2023-06-09T02:48:00.592Z" itemprop="datePublished">2023-06-09</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h1 id="Spark-StandAloneHA搭建"><a href="#Spark-StandAloneHA搭建" class="headerlink" title="Spark StandAloneHA搭建"></a>Spark StandAloneHA搭建</h1><h2 id="1-首先配置spark-env-sh"><a href="#1-首先配置spark-env-sh" class="headerlink" title="1.首先配置spark-env.sh"></a>1.首先配置spark-env.sh</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"> 删除SPARK_MASTER_HOST=node1这么操作的含义是不指定Master方便我们后续切换Master并在后面增加下面内容指定zookeeper</span><br><span class="line"></span><br><span class="line">_DAEMON_JAVA_OPTS=&quot;-Dspark.deploy.recoveryMode=ZOOKEEPER -Dspark.deploy.zookeeper.url=node1:2181,node2:2181,node3:2181 -Dspark.deploy.zookeeper.dir=/spark-ha&quot;</span><br><span class="line"></span><br><span class="line"># spark.deploy.recoveryMode 指定HA模式 基于Zookeeper实现</span><br><span class="line"># 指定Zookeeper的连接地址</span><br><span class="line"># 指定在Zookeeper中注册临时节点的路径</span><br><span class="line"># 然后将spark分发到node2和node3中</span><br></pre></td></tr></table></figure>
-<p><img src="/../sparkha/1.png" alt="图"></p>
-<h2 id="2-测试Spark-StandAloneHA"><a href="#2-测试Spark-StandAloneHA" class="headerlink" title="2.测试Spark StandAloneHA"></a>2.测试Spark StandAloneHA</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">先在node1上启动一个master和全部的woiker</span><br><span class="line">然后在node2上启动一个备用的maste</span><br></pre></td></tr></table></figure>
-<p><img src="/../sparkha/2.png" alt="图"><br><img src="/../sparkha/3.png" alt="图"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">如图node1的状态是alive node2的状态是standy</span><br><span class="line">提交一个任务到node1上的spark</span><br><span class="line">bin/spark-submit --master spark://node1:7077 /export/server/spark/examples/src/main/python/pi.py 1000</span><br></pre></td></tr></table></figure>
-<p><img src="/../sparkha/4.png" alt="图"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">然后另起一台node1杀死node1的master</span><br></pre></td></tr></table></figure>
-<p><img src="/../sparkha/5.png" alt="图"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">可以看到断开连接，等待一段时间。</span><br></pre></td></tr></table></figure>
-<p><img src="/../sparkha/6.png" alt="图"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">发现程序执行成功代表我们的HA模式搭建成功。在node1的master出现问题崩溃掉的时候会自动切换到node2的备用master上使我们的程序不会崩溃。</span><br></pre></td></tr></table></figure>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2023/06/09/ha/" data-id="clio2kmei0002pgtz7h44hmsp" data-title="" class="article-share-link">Share</a>
-      
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-yarn" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2023/06/09/yarn/" class="article-date">
-  <time class="dt-published" datetime="2023-06-09T02:14:21.243Z" itemprop="datePublished">2023-06-09</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h1 id="Spark-On-YARN-环境搭建部署"><a href="#Spark-On-YARN-环境搭建部署" class="headerlink" title="Spark On YARN 环境搭建部署"></a>Spark On YARN 环境搭建部署</h1><h2 id="1-配置spark-env-sh"><a href="#1-配置spark-env-sh" class="headerlink" title="1.配置spark-env.sh"></a>1.配置spark-env.sh</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">Cd /export/server/spark/conf</span><br><span class="line">Vi spark-env.sh</span><br><span class="line">加入一下内容：</span><br><span class="line">## 设置JAVA安装目录</span><br><span class="line">JAVA_HOME=/export/server/jdk</span><br><span class="line"></span><br><span class="line">## HADOOP软件配置文件目录，读取HDFS上文件和运行YARN集群</span><br><span class="line">HADOOP_CONF_DIR=/export/server/hadoop/etc/hadoop</span><br><span class="line">YARN_CONF_DIR=/export/server/hadoop/etc/hadoop</span><br><span class="line"></span><br><span class="line">## 指定spark老大Master的IP和提交任务的通信端口</span><br><span class="line"># 告知Spark的master运行在哪个机器上</span><br><span class="line"></span><br><span class="line"># 告知sparkmaster的通讯端口</span><br><span class="line">export SPARK_MASTER_PORT=7077</span><br><span class="line"># 告知spark master的 webui端口</span><br><span class="line">SPARK_MASTER_WEBUI_PORT=8080</span><br><span class="line"></span><br><span class="line"># worker cpu可用核数</span><br><span class="line">SPARK_WORKER_CORES=1</span><br><span class="line"># worker可用内存</span><br><span class="line">SPARK_WORKER_MEMORY=1g</span><br><span class="line"># worker的工作通讯地址</span><br><span class="line">SPARK_WORKER_PORT=7078</span><br><span class="line"># worker的 webui地址</span><br><span class="line">SPARK_WORKER_WEBUI_PORT=8081</span><br><span class="line"></span><br><span class="line">## 设置历史服务器</span><br><span class="line"># 配置的意思是  将spark程序运行的历史日志 存到hdfs的/sparklog文件夹中</span><br><span class="line">SPARK_HISTORY_OPTS=&quot;-Dspark.history.fs.logDirectory=hdfs://node1:8020/sparklog/ -Dspark.history.fs.cleaner.enabled=true&quot;</span><br><span class="line">SPARK_DAEMON_JAVA_OPTS=&quot;-Dspark.deploy.recoveryMode=ZOOKEEPER -Dspark.deploy.zookeeper.url=node1:2181,node2:2181,node3:2181 -Dspark.deploy.zookeeper.dir=/spark-ha&quot;</span><br><span class="line"># spark.deploy.recoveryMode 指定HA模式 基于Zookeeper实现</span><br><span class="line"># 指定Zookeeper的连接地址</span><br><span class="line"># 指定在Zookeeper中注册临时节点的路径</span><br></pre></td></tr></table></figure>
-<p><img src="/../sparkha/7.png" alt="图"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">连接YARN</span><br><span class="line">bin/pyspark --master yarn --deploy-mode client|cluster</span><br></pre></td></tr></table></figure>
-<p><img src="/../sparkha/8.png" alt="图"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/spark-shell --master yarn --deploy-mode client|cluster</span><br></pre></td></tr></table></figure>
-<p><img src="/../sparkha/9.png" alt="图"></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2023/06/09/yarn/" data-id="clio2kmeg0001pgtzg3cfhhvk" data-title="" class="article-share-link">Share</a>
-      
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-local" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+        <section id="main"><article id="post-local" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2023/06/09/local/" class="article-date">
   <time class="dt-published" datetime="2023-06-09T01:06:14.125Z" itemprop="datePublished">2023-06-09</time>
@@ -185,61 +111,29 @@
     </footer>
   </div>
   
-</article>
-
-
-
+    
+<nav id="article-nav">
   
-    <article id="post-alone" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2023/06/07/alone/" class="article-date">
-  <time class="dt-published" datetime="2023-06-07T09:25:17.975Z" itemprop="datePublished">2023-06-07</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h1 id="Spark-StandAlone环境部署"><a href="#Spark-StandAlone环境部署" class="headerlink" title="Spark StandAlone环境部署"></a>Spark StandAlone环境部署</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">进入到spark的配置文件目录中, cd  spark/conf</span><br><span class="line">配置workers文件:</span><br><span class="line">改名, 去掉后面的.template后缀</span><br><span class="line">mv workers.template workers</span><br></pre></td></tr></table></figure>
-<p><img src="/../images/11.png" alt="图"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 编辑worker文件</span><br><span class="line">vim workers</span><br><span class="line"># 将里面的localhost删除, 添加</span><br><span class="line">node1</span><br><span class="line">node2</span><br><span class="line">node3</span><br><span class="line">到workers文件内</span><br></pre></td></tr></table></figure>
-<p><img src="/../images/12.png" alt="图"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">配置spark-env.sh文件</span><br><span class="line"># 1. 改名</span><br><span class="line">mv spark-env.sh.template spark-env.sh</span><br></pre></td></tr></table></figure>
-<p><img src="/../images/13.png" alt="图"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"># 2. 编辑spark-env.sh, 在底部追加如下内容</span><br><span class="line">## 设置JAVA安装目录</span><br><span class="line">JAVA_HOME=/export/server/jdk</span><br><span class="line"></span><br><span class="line">## HADOOP软件配置文件目录，读取HDFS上文件和运行YARN集群</span><br><span class="line">HADOOP_CONF_DIR=/export/server/hadoop/etc/hadoop</span><br><span class="line">YARN_CONF_DIR=/export/server/hadoop/etc/hadoop</span><br><span class="line"></span><br><span class="line">## 指定spark老大Master的IP和提交任务的通信端口</span><br><span class="line"># 告知Spark的master运行在哪个机器上</span><br><span class="line">export SPARK_MASTER_HOST=node1</span><br><span class="line"># 告知sparkmaster的通讯端口</span><br><span class="line">export SPARK_MASTER_PORT=7077</span><br><span class="line"># 告知spark master的 webui端口</span><br><span class="line">SPARK_MASTER_WEBUI_PORT=8080</span><br><span class="line"></span><br><span class="line"># worker cpu可用核数</span><br><span class="line">SPARK_WORKER_CORES=1</span><br><span class="line"># worker可用内存</span><br><span class="line">SPARK_WORKER_MEMORY=1g</span><br><span class="line"># worker的工作通讯地址</span><br><span class="line">SPARK_WORKER_PORT=7078</span><br><span class="line"># worker的 webui地址</span><br><span class="line">SPARK_WORKER_WEBUI_PORT=8081</span><br><span class="line"></span><br><span class="line">## 设置历史服务器</span><br><span class="line"># 配置的意思是  将spark程序运行的历史日志 存到hdfs的/sparklog文件夹中</span><br><span class="line">SPARK_HISTORY_OPTS=&quot;-Dspark.history.fs.logDirectory=hdfs://node1:8020/sparklog/ -Dspark.history.fs.cleaner.enabled=true&quot;</span><br></pre></td></tr></table></figure>
-<p><img src="/../images/14.png" alt="图"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">在HDFS上创建程序运行历史记录存放的文件夹:</span><br><span class="line">hadoop fs -mkdir /sparklog</span><br><span class="line">hadoop fs -chmod 777 /sparklog</span><br><span class="line">配置spark-defaults.conf文件</span><br><span class="line"># 1. 改名</span><br><span class="line">mv spark-defaults.conf.template spark-defaults.conf</span><br></pre></td></tr></table></figure>
-<p><img src="/../images/15.png" alt="图"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 2. 修改内容</span><br><span class="line"># 开启spark的日期记录功能</span><br><span class="line">spark.eventLog.enabled 	true</span><br><span class="line"># 设置spark日志记录的路径</span><br><span class="line">spark.eventLog.dir	 hdfs://node1:8020/sparklog/ </span><br><span class="line"># 设置spark日志是否启动压缩</span><br><span class="line">spark.eventLog.compress 	true</span><br></pre></td></tr></table></figure>
-<p><img src="/../images/16.png" alt="图"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">配置log4j.properties 文件 </span><br><span class="line">改名</span><br><span class="line">mv log4j.properties.template log4j.properties</span><br></pre></td></tr></table></figure>
-<p><img src="/../images/17.png" alt="图"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">将Spark安装文件夹  分发到其它的服务器上</span><br><span class="line">scp -r spark-3.1.2-bin-hadoop3.2 node2:/export/server/</span><br><span class="line">scp -r spark-3.1.2-bin-hadoop3.2 node3:/export/server/</span><br><span class="line">分别在node2，node3设置软连接：</span><br><span class="line">ln -s /export/server/spark-3.1.2-bin-hadoop3.2 /export/server/spark</span><br><span class="line">启动历史服务器</span><br><span class="line">sbin/start-history-server.sh</span><br></pre></td></tr></table></figure>
-<p><img src="/../images/18.png" alt="图"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">启动Spark的Master和Worker进程</span><br><span class="line"># 启动全部master和worker</span><br><span class="line">sbin/start-all.sh</span><br><span class="line"># 或者可以一个个启动:</span><br><span class="line"># 启动当前机器的master</span><br><span class="line">sbin/start-master.sh</span><br><span class="line"># 启动当前机器的worker</span><br><span class="line">sbin/start-worker.sh</span><br><span class="line"># 停止全部</span><br><span class="line">sbin/stop-all.sh</span><br><span class="line"># 停止当前机器的master</span><br><span class="line">sbin/stop-master.sh</span><br><span class="line"># 停止当前机器的worker</span><br><span class="line">sbin/stop-worker.sh</span><br><span class="line">查看Master的WEB UI</span><br></pre></td></tr></table></figure>
-<p><img src="/../images/19.png" alt="图"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">连接到StandAlone集群</span><br><span class="line">bin/pyspark --master spark://node1:7077</span><br></pre></td></tr></table></figure>
-<p><img src="/../images/20.png" alt="图"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">查看历史服务器WEB UI</span><br><span class="line">输入node1:18080</span><br></pre></td></tr></table></figure>
-<p><img src="/../images/21.png" alt="图"></p>
+    <a href="/2023/06/09/yarn/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          (no title)
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2023/06/07/alone/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title"></div>
+    </a>
+  
+</nav>
 
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2023/06/07/alone/" data-id="clio2kme90000pgtzgruy941x" data-title="" class="article-share-link">Share</a>
-      
-      
-      
-    </footer>
-  </div>
   
 </article>
 
-
-
-  
 
 </section>
         <aside id="sidebar">
